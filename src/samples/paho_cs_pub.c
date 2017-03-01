@@ -75,8 +75,7 @@ void usage(void)
 void myconnect(MQTTClient* client, MQTTClient_connectOptions* opts)
 {
 	printf("Connecting\n");
-	if (MQTTClient_connect(*client, opts) != 0)
-	{
+	if (MQTTClient_connect(*client, opts) != 0) {
 		printf("Failed to connect\n");
 		exit(EXIT_FAILURE);
 	}
@@ -113,6 +112,17 @@ void getopts(int argc, char** argv);
 int messageArrived(void* context, char* topicName, int topicLen, MQTTClient_message* m)
 {
 	/* not expecting any messages */
+    unsigned int i = 0;
+    char* payloadptr;
+    printf("messageArrived: \n");
+    printf("topic: %s\r\n", topicName);
+    payloadptr = m->payload;
+    printf("mesage payload: ");
+    for(i = 0; i < m->payloadlen; i++) {
+        putchar(*payloadptr++);
+    }
+    putchar('\n');
+
 	return 1;
 }
 
@@ -156,6 +166,8 @@ int main(int argc, char** argv)
 	myconnect(&client, &conn_opts);
 
 	buffer = malloc(opts.maxdatalen);
+
+    rc = MQTTClient_subscribe(client, topic, opts.qos);
 	
 	while (!toStop)
 	{
